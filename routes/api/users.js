@@ -7,6 +7,8 @@ const {
   getUserByEmail,
   login,
   logout,
+  verifyToken,
+  verifyAgain,
 } = require("../../models/users/users");
 
 const { upload, updateAvatar } = require("../../models/users/upload");
@@ -42,7 +44,7 @@ router.post("/login", async (req, res, next) => {
     res.status(400).json({
       status: "error",
       code: 400,
-      message: "Incorrect login or password",
+      message: "Incorrect login, password or user not verified",
       data: "Bad request",
     });
   } else {
@@ -128,5 +130,48 @@ router.patch(
     }
   }
 );
+
+router.get("/auth/verify/:verificationToken", auth, async (req, res, next) => {
+  const { verificationToken } = req.params;
+  const user = await verifyToken(verificationToken);
+  if (user) {
+    res.json({
+      status: "success",
+      code: 200,
+      message: "Verification successful",
+    });
+  } else {
+    res.status(404).json({
+      status: "error",
+      code: 404,
+      message: "User not found",
+    });
+  }
+});
+
+router.post("/verify/", async (req, res, next) => {
+  const { email } = req.body;
+  if (!email) {
+    res.status(400).json({
+      status: "error",
+      code: 400,
+      message: "Missing required field email",
+    });
+  }
+  const user = await verifyAgain(email);
+  if (user) {
+    res.json({
+      status: "success",
+      code: 200,
+      message: "Verification email sent",
+    });
+  } else {
+    res.status(400).json({
+      status: "error",
+      code: 400,
+      message: "Verification has already been passed",
+    });
+  }
+});
 
 module.exports = router;
