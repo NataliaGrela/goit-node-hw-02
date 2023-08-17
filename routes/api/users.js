@@ -131,7 +131,7 @@ router.patch(
   }
 );
 
-router.get("/auth/verify/:verificationToken", auth, async (req, res, next) => {
+router.get("/auth/verify/:verificationToken", async (req, res, next) => {
   const { verificationToken } = req.params;
   const user = await verifyToken(verificationToken);
   if (user) {
