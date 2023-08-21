@@ -7,7 +7,7 @@ require("./nodemailer");
 require("./auth/auth");
 
 const contactsRouter = require("./routes/api/contacts");
-const usersRouter = require("./routes/api/users");
+const { router: usersRouter } = require("./routes/api/users");
 
 const connectDB = require("./db");
 

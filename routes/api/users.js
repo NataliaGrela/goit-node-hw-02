@@ -17,7 +17,7 @@ const router = express.Router();
 
 const auth = (req, res, next) => {
   passport.authenticate("jwt", { session: false }, (err, user) => {
-    if (!user || err) {
+    if (!user || err || (user && !user.verify)) {
       return res.status(401).json({
         status: "error",
         code: 401,
@@ -174,4 +174,4 @@ router.post("/verify/", async (req, res, next) => {
   }
 });
 
-module.exports = router;
+module.exports = { router, auth };
