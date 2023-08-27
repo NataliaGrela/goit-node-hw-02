@@ -1,5 +1,5 @@
 const { schema, statusSchema } = require("../../models/schema.js");
-
+const { auth } = require("./users");
 const {
   listContacts,
   getContactById,
@@ -12,12 +12,12 @@ const express = require("express");
 
 const router = express.Router();
 
-router.get("/", async (req, res, next) => {
+router.get("/", auth, async (req, res, next) => {
   const contacts = await listContacts();
   res.json(contacts);
 });
 
-router.get("/:contactId", async (req, res, next) => {
+router.get("/:contactId", auth, async (req, res, next) => {
   try {
     const contact = await getContactById(req.params.contactId);
     if (contact) {
@@ -30,7 +30,7 @@ router.get("/:contactId", async (req, res, next) => {
   }
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", auth, async (req, res, next) => {
   const contact = {
     name: req.body.name,
     email: req.body.email,
@@ -52,7 +52,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.delete("/:contactId", async (req, res, next) => {
+router.delete("/:contactId", auth, async (req, res, next) => {
   const contactDeleted = await removeContact(req.params.contactId);
   if (contactDeleted) {
     res.json({ message: "contact deleted" });
@@ -61,7 +61,7 @@ router.delete("/:contactId", async (req, res, next) => {
   }
 });
 
-router.put("/:contactId", async (req, res, next) => {
+router.put("/:contactId", auth, async (req, res, next) => {
   if (!req.body) {
     res.status(400).json({ message: "missing fields" });
   }
@@ -90,7 +90,7 @@ router.put("/:contactId", async (req, res, next) => {
   }
 });
 
-router.put("/:contactId/favorite", async (req, res, next) => {
+router.put("/:contactId/favorite", auth, async (req, res, next) => {
   const validation = statusSchema.validate(req.body);
   if (validation.error) {
     res.status(400).json({ message: validation.error.message });
